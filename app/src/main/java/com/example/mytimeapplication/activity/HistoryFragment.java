@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.example.mytimeapplication.MyApplication;
@@ -24,6 +25,8 @@ import com.example.mytimeapplication.bean.Record;
 import com.example.mytimeapplication.constant.Constant;
 import com.example.mytimeapplication.db.MyDatabaseHelper;
 import com.example.mytimeapplication.util.DateTimeUtil;
+import com.example.mytimeapplication.view.PopupWindowList;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,7 @@ public class HistoryFragment extends Fragment {
     //database
     private static MyDatabaseHelper dbHelper;
     private static SQLiteDatabase db;
+
 
     public static Fragment newInstance(){
         HistoryFragment fragment = new HistoryFragment();
@@ -71,20 +75,12 @@ public class HistoryFragment extends Fragment {
         //初始化数据
         getData();
 
-        //长按删除
-        //调用适配器里的方法
-        adapter.setOnLongClickLisenter(new RecordAdapter.onLongClickLisenter() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public void onLongClickLisenter(int i) {
-                Toast.makeText(getContext(),"长按： "+i,Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        //
-
         return view;
     }
+
+    /**
+     * 用于初始化和刷新数据
+     */
     public static void getData() {
         Log.d(TAG, "initData: ");
         list.clear();
@@ -93,14 +89,17 @@ public class HistoryFragment extends Fragment {
         if (cursor.moveToFirst()) {
             do {
                 // 遍历Cursor对象，将每条数据加入list，并打印到控制台
+                int id = cursor.getInt(cursor.getColumnIndex("id"));
                 String title = cursor.getString(cursor.getColumnIndex("title"));
                 long startTime = cursor.getLong(cursor.getColumnIndex("startTime"));
                 long stopTime = cursor.getLong(cursor.getColumnIndex("stopTime"));
-                list.add(new Record(title, startTime, stopTime));
+                list.add(new Record(id,title, startTime, stopTime));
             } while (cursor.moveToNext());
         }
         cursor.close();
         //更新listView
         adapter.notifyDataSetChanged();
     }
+
+
 }
