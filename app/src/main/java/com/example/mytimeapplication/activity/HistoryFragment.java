@@ -2,21 +2,22 @@ package com.example.mytimeapplication.activity;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.CalendarView;
 import android.widget.Toast;
+
 
 import com.example.mytimeapplication.MyApplication;
 import com.example.mytimeapplication.R;
@@ -24,8 +25,6 @@ import com.example.mytimeapplication.adapter.RecordAdapter;
 import com.example.mytimeapplication.bean.Record;
 import com.example.mytimeapplication.constant.Constant;
 import com.example.mytimeapplication.db.MyDatabaseHelper;
-import com.example.mytimeapplication.util.DateTimeUtil;
-import com.example.mytimeapplication.view.PopupWindowList;
 
 
 import java.util.ArrayList;
@@ -45,6 +44,8 @@ public class HistoryFragment extends Fragment {
     public static RecordAdapter getAdapter() {
         return adapter;
     }
+
+    public static List<Record> getList(){return list;}
 
     public static Fragment newInstance(){
         HistoryFragment fragment = new HistoryFragment();
@@ -77,6 +78,15 @@ public class HistoryFragment extends Fragment {
         //初始化数据
         getData();
 
+        //Calendar View 选择日期
+        CalendarView calendarView = view.findViewById(R.id.calendar_view);
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            public void onSelectedDayChange(CalendarView view, int year, int month,
+                                            int dayOfMonth) {
+                String content = year+"-"+(month+1)+"-"+dayOfMonth;
+                Toast.makeText(MyApplication.getContext(), "你选择了:\n"+content, Toast.LENGTH_SHORT).show();
+            }
+        });
         return view;
     }
 

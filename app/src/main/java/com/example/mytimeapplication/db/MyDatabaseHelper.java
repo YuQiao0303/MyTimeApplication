@@ -76,7 +76,21 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public long deleteById(SQLiteDatabase db, int id){
-        long result = db.delete(Constant.DB_RECORD_TABLE_NAME,"id = ?",new String[] {(""+ id)});
-        return result;
+        return db.delete(Constant.DB_RECORD_TABLE_NAME,"id = ?",new String[] {(""+ id)});
+    }
+    public long updateTitle(SQLiteDatabase db,int id,String newTitle){
+        ContentValues values = new ContentValues();
+        values.put("title", newTitle);
+        return db.update(Constant.DB_RECORD_TABLE_NAME,values,"id = ?",new String[] {(""+ id)});
+    }
+    public long updateStartTime(SQLiteDatabase db,int id,long newStartTime){
+        ContentValues values = new ContentValues();
+        values.put("startTime", newStartTime);
+        return db.update(Constant.DB_RECORD_TABLE_NAME,values,"id = ?",new String[] {(""+ id)});
+    }
+    public long updateStopTime(SQLiteDatabase db,int id,long newStopTime){
+        ContentValues values = new ContentValues();
+        values.put("stopTime", newStopTime);
+        return db.update(Constant.DB_RECORD_TABLE_NAME,values,"id = ?",new String[] {(""+ id)});
     }
 }

@@ -206,6 +206,7 @@ public class RecordAdapter extends RecyclerView.Adapter{
         //给UpdateRecordDialog 传参
         Bundle bundle = new Bundle();
         bundle.putSerializable("record",record);
+        bundle.putInt("itemPosition",itemPosition);
         dialog.setArguments(bundle);
         //显示UpdateRecordDialog
         dialog.show(((MainActivity)context).getFragmentManager(),"tag");
