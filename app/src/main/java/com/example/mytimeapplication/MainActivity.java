@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String []sTitle = new String[]{"HISTORY","NOW"};
+    public static final String []sTitle = new String[]{"Now","History"};
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     @Override
@@ -37,8 +37,9 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
 
         List<Fragment> fragments = new ArrayList<>();
-        fragments.add(HistoryFragment.newInstance());
         fragments.add(NowFragment.newInstance());
+        fragments.add(HistoryFragment.newInstance());
+
 
         MyFragmentAdapter adapter = new MyFragmentAdapter(getSupportFragmentManager(),fragments, Arrays.asList(sTitle));
         mViewPager.setAdapter(adapter);

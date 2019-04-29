@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">时间日志</string>
+    <string name="space_whole_time_long">                                     </string>
 </resources>
