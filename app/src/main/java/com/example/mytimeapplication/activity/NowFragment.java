@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -64,8 +63,8 @@ public class NowFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         //创建/获取数据库
         dbHelper = new MyDatabaseHelper(MyApplication.getContext(), Constant.DB_NAME, null, 1);
-        dbHelper.getWritableDatabase();   //检测有没有该名字的数据库，若没有则创建，同时调用dbHelper 的 onCreate 方法；
-        db = dbHelper.getWritableDatabase();
+        db = dbHelper.getWritableDatabase();   //检测有没有该名字的数据库，若没有则创建，同时调用dbHelper 的 onCreate 方法；
+
 
         super.onCreate(savedInstanceState);
     }
@@ -94,7 +93,7 @@ public class NowFragment extends Fragment {
                     mHandler.removeCallbacks(task);//停止定时更新ui
 
                     //加入数据库
-                    dbHelper.addRecord(db,title,startTime,stopTime);
+                    dbHelper.addRecordInDB(db,title,startTime,stopTime);
                     Toast.makeText(MyApplication.getContext(),"加入数据库成功",Toast.LENGTH_LONG);
                     HistoryFragment.getData();
 

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.mytimeapplication.MyApplication;
 import com.example.mytimeapplication.constant.Constant;
 import com.example.mytimeapplication.util.DateTimeUtil;
 
@@ -61,16 +62,21 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public int addRecord(SQLiteDatabase db,String title,long startTime, long stopTime){
-        int result = 0;
+    public long addRecordInDB(SQLiteDatabase db, String title, long startTime, long stopTime){
         ContentValues values = new ContentValues();
         values.put("title",title);
         values.put("startTime", startTime);
         values.put("stopTime",stopTime);
         values.put("startDate",DateTimeUtil.timestamp2ymd(startTime));
-        db.insert(Constant.DB_RECORD_TABLE_NAME,null,values);
+        long result = db.insert(Constant.DB_RECORD_TABLE_NAME,null,values);
         values.clear();
-        Log.d(TAG, "addRecord: 加入数据库成功！");
+        if(result != -1)
+            Log.d(TAG, "addRecordInDB: 加入数据库成功！");
+        return result;
+    }
+
+    public long deleteById(SQLiteDatabase db, int id){
+        long result = db.delete(Constant.DB_RECORD_TABLE_NAME,"id = ?",new String[] {(""+ id)});
         return result;
     }
 }

@@ -42,6 +42,9 @@ public class HistoryFragment extends Fragment {
     private static MyDatabaseHelper dbHelper;
     private static SQLiteDatabase db;
 
+    public static RecordAdapter getAdapter() {
+        return adapter;
+    }
 
     public static Fragment newInstance(){
         HistoryFragment fragment = new HistoryFragment();
@@ -53,8 +56,8 @@ public class HistoryFragment extends Fragment {
 
         //创建/获取数据库
         dbHelper = new MyDatabaseHelper(MyApplication.getContext(), Constant.DB_NAME, null, 1);
-        dbHelper.getWritableDatabase();   //检测有没有该名字的数据库，若没有则创建，同时调用dbHelper 的 onCreate 方法；
-        db = dbHelper.getWritableDatabase();
+        db = dbHelper.getWritableDatabase();   //检测有没有该名字的数据库，若没有则创建，同时调用dbHelper 的 onCreate 方法；
+
 
         super.onCreate(savedInstanceState);
     }
@@ -66,10 +69,9 @@ public class HistoryFragment extends Fragment {
         //time line
         RecyclerView recyclerView = view.findViewById(R.id.timeline_recycler_view);
 
-
         // recyclerview绑定适配器
         recyclerView.setLayoutManager(new LinearLayoutManager(MyApplication.getContext()));
-        adapter = new RecordAdapter(list);
+        adapter = new RecordAdapter(list,getActivity());
         recyclerView.setAdapter(adapter);
 
         //初始化数据
@@ -99,6 +101,7 @@ public class HistoryFragment extends Fragment {
         cursor.close();
         //更新listView
         adapter.notifyDataSetChanged();
+
     }
 
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <EditText
+                android:id="@+id/title_text"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:hint="修改标题"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/modify_start_date"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/my_button_background"
+            android:textColor="@drawable/my_button_text"
+            android:layout_margin="10dp"
+            android:text="更改开始日期"/>
+        <Button
+            android:id="@+id/modify_start_time"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/my_button_background"
+            android:textColor="@drawable/my_button_text"
+            android:layout_margin="10dp"
+            android:text="更改开始时间"/>
+        <Button
+            android:id="@+id/modify_stop_date"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/my_button_background"
+            android:textColor="@drawable/my_button_text"
+            android:layout_margin="10dp"
+            android:text="更改结束日期"/>
+        <Button
+            android:id="@+id/modify_stop_time"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/my_button_background"
+            android:textColor="@drawable/my_button_text"
+            android:layout_margin="10dp"
+            android:text="更改结束时间"/>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

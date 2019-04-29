@@ -1,8 +1,9 @@
 package com.example.mytimeapplication.bean;
 
 
-
-public class Record {
+import java.io.Serializable;
+//implements Serializable ，可序列化，就可以放入bundle中，给fragment传值
+public class Record  implements Serializable{
     private int id;
     private String title;
     private long startTime;
