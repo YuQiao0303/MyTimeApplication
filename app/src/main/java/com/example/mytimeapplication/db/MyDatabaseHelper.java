@@ -10,6 +10,8 @@ import com.example.mytimeapplication.MyApplication;
 import com.example.mytimeapplication.constant.Constant;
 import com.example.mytimeapplication.util.DateTimeUtil;
 
+import java.util.Date;
+
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "MyDatabaseHelper";
@@ -71,7 +73,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         long result = db.insert(Constant.DB_RECORD_TABLE_NAME,null,values);
         values.clear();
         if(result != -1)
-            Log.d(TAG, "addRecordInDB: 加入数据库成功！");
+            Log.d(TAG, "addRecordInDB: 加入数据库成功！startDate = "+DateTimeUtil.timestamp2ymd(startTime) );
         return result;
     }
 
@@ -86,6 +88,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public long updateStartTime(SQLiteDatabase db,int id,long newStartTime){
         ContentValues values = new ContentValues();
         values.put("startTime", newStartTime);
+        values.put("startDate", DateTimeUtil.timestamp2ymd(newStartTime));
         return db.update(Constant.DB_RECORD_TABLE_NAME,values,"id = ?",new String[] {(""+ id)});
     }
     public long updateStopTime(SQLiteDatabase db,int id,long newStopTime){

@@ -1,5 +1,6 @@
 package com.example.mytimeapplication.activity;
 
+import android.database.ContentObservable;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -15,6 +16,10 @@ import android.view.LayoutInflater;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.Toast;
 
@@ -25,6 +30,7 @@ import com.example.mytimeapplication.adapter.RecordAdapter;
 import com.example.mytimeapplication.bean.Record;
 import com.example.mytimeapplication.constant.Constant;
 import com.example.mytimeapplication.db.MyDatabaseHelper;
+import com.example.mytimeapplication.util.DateTimeUtil;
 
 
 import java.util.ArrayList;
@@ -40,6 +46,11 @@ public class HistoryFragment extends Fragment {
     //database
     private static MyDatabaseHelper dbHelper;
     private static SQLiteDatabase db;
+
+    //当前选择的日期
+    private static String currentDate;
+
+
 
     public static RecordAdapter getAdapter() {
         return adapter;
@@ -58,8 +69,7 @@ public class HistoryFragment extends Fragment {
         //创建/获取数据库
         dbHelper = new MyDatabaseHelper(MyApplication.getContext(), Constant.DB_NAME, null, 1);
         db = dbHelper.getWritableDatabase();   //检测有没有该名字的数据库，若没有则创建，同时调用dbHelper 的 onCreate 方法；
-
-
+        currentDate = DateTimeUtil.timestamp2ymd(System.currentTimeMillis());
         super.onCreate(savedInstanceState);
     }
 
@@ -75,18 +85,50 @@ public class HistoryFragment extends Fragment {
         adapter = new RecordAdapter(list,getActivity());
         recyclerView.setAdapter(adapter);
 
+
         //初始化数据
         getData();
 
         //Calendar View 选择日期
-        CalendarView calendarView = view.findViewById(R.id.calendar_view);
+        final CalendarView calendarView = view.findViewById(R.id.calendar_view);
+
+        currentDate = DateTimeUtil.timestamp2ymd(calendarView.getDate());
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             public void onSelectedDayChange(CalendarView view, int year, int month,
                                             int dayOfMonth) {
-                String content = year+"-"+(month+1)+"-"+dayOfMonth;
-                Toast.makeText(MyApplication.getContext(), "你选择了:\n"+content, Toast.LENGTH_SHORT).show();
+                currentDate = "" + year + "-";
+                if(month<10) currentDate +="0";
+                currentDate += ""+ (month+1) +"-";  //month 范围是0-11
+                if(dayOfMonth<10) currentDate+="0";
+                currentDate +=dayOfMonth;
+
+                Log.d(TAG, "onSelectedDayChange: currentDate: " + currentDate);
+                Log.d(TAG, "onSelectedDayChange: year month day : "+ year + "-" + month +"-"+dayOfMonth);
+                getData();
+
             }
         });
+
+        //隐藏日历
+        final Button button = view.findViewById(R.id.show_hide_calendar);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //隐藏
+                if(calendarView.getVisibility() == View.VISIBLE)
+                {
+                    calendarView.setVisibility(View.GONE);
+                    button.setText("显示日历");
+                }
+                //显示
+                else if (calendarView.getVisibility() == View.GONE)
+                {
+                    calendarView.setVisibility((View.VISIBLE));
+                    button.setText("隐藏日历");
+                }
+            }
+        });
+
         return view;
     }
 
@@ -96,8 +138,9 @@ public class HistoryFragment extends Fragment {
     public static void getData() {
         Log.d(TAG, "initData: ");
         list.clear();
-        // 查询DB_RECORD_NAME表中所有的数据
-        Cursor cursor = db.query(Constant.DB_RECORD_TABLE_NAME, null, null, null, null, null, "startTime desc");
+        // 查询DB_RECORD_NAME表中所有所选日期的数据
+        //Cursor cursor = db.query(Constant.DB_RECORD_TABLE_NAME, null, null, null, null, null, "startTime desc");
+        Cursor cursor = db.rawQuery("select * from " + Constant.DB_RECORD_TABLE_NAME +" where startDate = ? order by startTime desc "  ,new String[] {currentDate});
         if (cursor.moveToFirst()) {
             do {
                 // 遍历Cursor对象，将每条数据加入list，并打印到控制台

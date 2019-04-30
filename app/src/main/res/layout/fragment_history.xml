@@ -7,18 +7,28 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <!--calendar-->
             <CalendarView
                 android:id="@+id/calendar_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                >
             </CalendarView>
+            <!--show calendar button-->
+            <Button
+                android:id="@+id/show_hide_calendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/my_button_background"
+                android:textColor="@drawable/my_button_text"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:text="隐藏日历"/>
             <!--time line-->
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/timeline_recycler_view"
@@ -29,7 +39,7 @@
             </android.support.v7.widget.RecyclerView>
         </LinearLayout>
 
-    </ScrollView>
+
 
 
 </LinearLayout>
