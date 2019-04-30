@@ -77,6 +77,9 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    public long deleteAll(SQLiteDatabase db){
+        return db.delete(Constant.DB_RECORD_TABLE_NAME,null,null);
+    }
     public long deleteById(SQLiteDatabase db, int id){
         return db.delete(Constant.DB_RECORD_TABLE_NAME,"id = ?",new String[] {(""+ id)});
     }
