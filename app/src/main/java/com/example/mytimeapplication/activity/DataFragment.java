@@ -61,8 +61,12 @@ public class DataFragment extends Fragment {
             public void onClick(View v) {
                 //清空数据库
                 dbHelper.deleteAll(db);
-                //将读取的文本进行分割,得到每条记录
                 String data = dataText.getText().toString();
+                if(data.equals("")||data == null) {
+                    HistoryFragment.getData();
+                    return;
+                }
+                //将读取的文本进行分割,得到每条记录
                 String[] records = data.split("\n");
                 for(String record : records)
                 {
@@ -76,9 +80,9 @@ public class DataFragment extends Fragment {
                     long startTime =Long.parseLong(columeValues[1]);
                     long stopTime =Long.parseLong(columeValues[2]);
                     dbHelper.addRecordInDB(db,title,startTime,stopTime);
-                    HistoryFragment.getData();
-                }
 
+                }
+                HistoryFragment.getData();
             }
         }));
 
