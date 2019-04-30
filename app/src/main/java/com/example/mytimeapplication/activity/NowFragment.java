@@ -1,8 +1,10 @@
 package com.example.mytimeapplication.activity;
 
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +23,8 @@ import com.example.mytimeapplication.constant.Constant;
 import com.example.mytimeapplication.db.MyDatabaseHelper;
 import com.example.mytimeapplication.util.DateTimeUtil;
 
+import static android.content.Context.MODE_PRIVATE;
+
 
 public class NowFragment extends Fragment {
     private static final String TAG = "NowFragment";
@@ -31,6 +35,9 @@ public class NowFragment extends Fragment {
     TextView durationText;
     EditText titleText;
 
+    //preference
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
     //database
     private static MyDatabaseHelper dbHelper;
     SQLiteDatabase db;
@@ -39,6 +46,7 @@ public class NowFragment extends Fragment {
     boolean isDoingSomething = false;
     long startTime;
     long stopTime;
+    String title;
     long duration = 0;
 
     Handler mHandler = new Handler();
@@ -65,7 +73,9 @@ public class NowFragment extends Fragment {
         dbHelper = new MyDatabaseHelper(MyApplication.getContext(), Constant.DB_NAME, null, 1);
         db = dbHelper.getWritableDatabase();   //检测有没有该名字的数据库，若没有则创建，同时调用dbHelper 的 onCreate 方法；
 
-
+        //preference
+        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        editor = pref.edit();
         super.onCreate(savedInstanceState);
     }
 
@@ -79,6 +89,36 @@ public class NowFragment extends Fragment {
         startTimeText = view.findViewById(R.id.start_time);
         durationText = view.findViewById(R.id.duration);
 
+        //上次的数据
+        //如果有上次fragment被回收时保存的数据
+        if (savedInstanceState != null) {
+            Log.d(TAG, "onCreate: there is savedInstanceState");
+            if(savedInstanceState.getBoolean("isDoingSomething")){
+                title = savedInstanceState.getString("title");
+                startTime = savedInstanceState.getLong("startTime");
+                isDoingSomething = true;
+                startStopImg.setImageResource(R.drawable.stop);
+                startTimeText.setText(DateTimeUtil.timestamp2whole(startTime));
+                duration = System.currentTimeMillis() - startTime;
+                mHandler.post(task);//定时更新ui
+            }
+        }
+
+
+//        isDoingSomething = pref.getBoolean("isDoingSomething",false);
+//        Log.d(TAG, "onCreateView: isdoingsomething = " + isDoingSomething);
+//        Log.d(TAG, "onCreateView: title = "+ pref.getString("title", ""));
+//        Log.d(TAG, "onCreateView: startTime = " + pref.getLong("startTime", 0));
+//        if(isDoingSomething) {
+//            title = pref.getString("title", "");
+//            startTime = pref.getLong("startTime", 0);
+//            startStopImg.setImageResource(R.drawable.stop);
+//            startTimeText.setText(DateTimeUtil.timestamp2whole(startTime));
+//            titleText.setText(title);
+//            duration = System.currentTimeMillis() - startTime;
+//            mHandler.post(task);//定时更新ui
+//        }
+
         startStopImg.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,7 +126,7 @@ public class NowFragment extends Fragment {
                     //to stop
                     startStopImg.setImageResource(R.drawable.play);
                     stopTime = System.currentTimeMillis();
-                    String title = titleText.getText().toString();
+                    title = titleText.getText().toString();
                     Log.d(TAG, "onClick: stop time is "+ stopTime);
                     Log.d(TAG, "onClick: last for " + (stopTime-startTime)/1000 + "s");
                     duration = 0;
@@ -111,4 +151,40 @@ public class NowFragment extends Fragment {
         }));
         return view;
     }
+
+    /**
+     * Fragment被回收之前一定会被调用
+     * 用来保存一些数据
+     * @param outState
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(isDoingSomething)
+        {
+            outState.putBoolean("isDoingSomething",true);
+            outState.putString("title", title);
+            outState.putLong("startTime",startTime);
+        }
+    }
+
+//    /**
+//     * 如果关闭时任务正在进行中，则保存开始时间和标题
+//     */
+//    @Override
+//    public void onDestroyView(){
+////        SharedPreferences.Editor editor = getActivity().getSharedPreferences("data", MODE_PRIVATE).edit();
+//
+//        editor.putBoolean("isDoingSomething", isDoingSomething);
+//        if(isDoingSomething)
+//        {
+//            editor.putString("title", title);
+//            editor.putLong("startTime", startTime);
+//        }
+//        boolean result = editor.commit();
+//        Log.d(TAG, "onDestroyView: result = "+ result);
+//        Log.d(TAG, "onDestroyView: isDoingSomething " + isDoingSomething);
+//        Log.d(TAG, "onDestroyView: pre title = "+pref.getString("title","ff"));
+//        super.onDestroyView();
+//    }
 }
