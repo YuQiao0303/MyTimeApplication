@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,41 +91,41 @@ public class NowFragment extends Fragment {
         startTimeText = view.findViewById(R.id.start_time);
         durationText = view.findViewById(R.id.duration);
 
-        //上次的数据
-        //如果有上次fragment被回收时保存的数据
-        if (savedInstanceState != null) {
-            Log.d(TAG, "onCreate: there is savedInstanceState");
-            if(savedInstanceState.getBoolean("isDoingSomething")){
-                title = savedInstanceState.getString("title");
-                startTime = savedInstanceState.getLong("startTime");
-                isDoingSomething = true;
-                startStopImg.setImageResource(R.drawable.stop);
-                startTimeText.setText(DateTimeUtil.timestamp2whole(startTime));
-                duration = System.currentTimeMillis() - startTime;
-                mHandler.post(task);//定时更新ui
+        //更改标题时暂存到preference
+        titleText.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
+            public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {}
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                title = arg0.toString();
+                editor.putString("title",title);
+                editor.commit();
             }
+        });
+        //如果preference中还有上次的数据
+        mHandler.removeCallbacks(task);//停止定时更新ui
+        isDoingSomething = pref.getBoolean("isDoingSomething",false);
+        Log.d(TAG, "onCreateView: isdoingsomething = " + isDoingSomething);
+        Log.d(TAG, "onCreateView: title = "+ pref.getString("title", ""));
+        Log.d(TAG, "onCreateView: startTime = " + pref.getLong("startTime", 0));
+        title = pref.getString("title", "");
+        titleText.setText(title);
+        if(isDoingSomething) {
+            startTime = pref.getLong("startTime", 0);
+            startStopImg.setImageResource(R.drawable.stop);
+            startTimeText.setText(DateTimeUtil.timestamp2whole(startTime));
+            duration = System.currentTimeMillis() - startTime;
+            mHandler.post(task);//定时更新ui
         }
-
-
-//        isDoingSomething = pref.getBoolean("isDoingSomething",false);
-//        Log.d(TAG, "onCreateView: isdoingsomething = " + isDoingSomething);
-//        Log.d(TAG, "onCreateView: title = "+ pref.getString("title", ""));
-//        Log.d(TAG, "onCreateView: startTime = " + pref.getLong("startTime", 0));
-//        if(isDoingSomething) {
-//            title = pref.getString("title", "");
-//            startTime = pref.getLong("startTime", 0);
-//            startStopImg.setImageResource(R.drawable.stop);
-//            startTimeText.setText(DateTimeUtil.timestamp2whole(startTime));
-//            titleText.setText(title);
-//            duration = System.currentTimeMillis() - startTime;
-//            mHandler.post(task);//定时更新ui
-//        }
 
         startStopImg.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(isDoingSomething){
                     //to stop
+                    editor.putBoolean("isDoingSomething",false);
+                    editor.commit();
                     startStopImg.setImageResource(R.drawable.play);
                     stopTime = System.currentTimeMillis();
                     title = titleText.getText().toString();
@@ -144,47 +146,18 @@ public class NowFragment extends Fragment {
                     startTime = System.currentTimeMillis();
                     startTimeText.setText(DateTimeUtil.timestamp2whole(startTime));
                     mHandler.post(task);//定时更新ui
-                    Log.d(TAG, "onClick: start time is "+ startTime);
+                    //保存数据
+                    editor.putBoolean("isDoingSomething", true);
+                    editor.putLong("startTime", startTime);
+                    boolean result = editor.commit();
+                    Log.d(TAG, "start: result = "+ result);
+                    Log.d(TAG, "start: isDoingSomething " + isDoingSomething);
+                    Log.d(TAG, "start: pre title = "+pref.getString("title","ff"));
+                                Log.d(TAG, "onClick: start time is "+ startTime);
                 }
                 isDoingSomething = !isDoingSomething;
             }
         }));
         return view;
     }
-
-    /**
-     * Fragment被回收之前一定会被调用
-     * 用来保存一些数据
-     * @param outState
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if(isDoingSomething)
-        {
-            outState.putBoolean("isDoingSomething",true);
-            outState.putString("title", title);
-            outState.putLong("startTime",startTime);
-        }
-    }
-
-//    /**
-//     * 如果关闭时任务正在进行中，则保存开始时间和标题
-//     */
-//    @Override
-//    public void onDestroyView(){
-////        SharedPreferences.Editor editor = getActivity().getSharedPreferences("data", MODE_PRIVATE).edit();
-//
-//        editor.putBoolean("isDoingSomething", isDoingSomething);
-//        if(isDoingSomething)
-//        {
-//            editor.putString("title", title);
-//            editor.putLong("startTime", startTime);
-//        }
-//        boolean result = editor.commit();
-//        Log.d(TAG, "onDestroyView: result = "+ result);
-//        Log.d(TAG, "onDestroyView: isDoingSomething " + isDoingSomething);
-//        Log.d(TAG, "onDestroyView: pre title = "+pref.getString("title","ff"));
-//        super.onDestroyView();
-//    }
 }
