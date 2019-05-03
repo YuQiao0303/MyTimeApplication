@@ -24,7 +24,7 @@ public class DataFragment extends Fragment {
 
     //widgets
     EditText dataText;
-    Button resetData;
+    Button deleteAll;
     Button exportData;
     Button addData;
 
@@ -51,37 +51,16 @@ public class DataFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_data,null);
 
         dataText =view.findViewById(R.id.data_text);
-        resetData = view.findViewById(R.id.reset_data);
+        deleteAll = view.findViewById(R.id.delete_all);
         exportData = view.findViewById(R.id.export_data);
         addData = view.findViewById(R.id.add_data);
 
-        //导入
-        resetData.setOnClickListener((new View.OnClickListener() {
+        //清空
+        deleteAll.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //清空数据库
                 dbHelper.deleteAll(db);
-                String data = dataText.getText().toString();
-                if(data.equals("")||data == null) {
-                    HistoryFragment.getData();
-                    return;
-                }
-                //将读取的文本进行分割,得到每条记录
-                String[] records = data.split("\n");
-                for(String record : records)
-                {
-                    //分割得到每个属性
-                    String[] columeValues = record.split("\\|");
-                    for(int i=0;i<columeValues.length;i++)
-                    {
-                        Log.d(TAG, "onClick: "+ i +" = " + columeValues[i]);
-                    }
-                    String title = columeValues[0];
-                    long startTime =Long.parseLong(columeValues[1]);
-                    long stopTime =Long.parseLong(columeValues[2]);
-                    dbHelper.addRecordInDB(db,title,startTime,stopTime);
-
-                }
                 HistoryFragment.getData();
             }
         }));
@@ -115,6 +94,32 @@ public class DataFragment extends Fragment {
                     } while (cursor.moveToNext());
                 }
                 cursor.close();
+            }
+        }));
+        //追加数据
+        addData.setOnClickListener((new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String data = dataText.getText().toString();
+                if(data.equals("")||data == null) {
+                    return;
+                }
+                //将读取的文本进行分割,得到每条记录
+                String[] records = data.split("\n");
+                for(String record : records)
+                {
+                    //分割得到每个属性
+                    String[] columeValues = record.split("\\|");
+                    for(int i=0;i<columeValues.length;i++)
+                    {
+                        Log.d(TAG, "onClick: "+ i +" = " + columeValues[i]);
+                    }
+                    String title = columeValues[0];
+                    long startTime =Long.parseLong(columeValues[1]);
+                    long stopTime =Long.parseLong(columeValues[2]);
+                    dbHelper.addRecordInDB(db,title,startTime,stopTime);
+                }
+                HistoryFragment.getData();
             }
         }));
         return view;

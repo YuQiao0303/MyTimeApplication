@@ -39,13 +39,13 @@
             android:layout_margin="10dp"
             android:text="导出"/>
         <Button
-            android:id="@+id/reset_data"
+            android:id="@+id/delete_all"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:background="@drawable/my_button_background"
             android:textColor="@drawable/my_button_text"
             android:layout_margin="10dp"
-            android:text="重置"/>
+            android:text="清空"/>
         <Button
             android:id="@+id/add_data"
             android:layout_width="100dp"

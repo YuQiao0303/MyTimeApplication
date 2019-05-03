@@ -40,6 +40,7 @@ public class NowFragment extends Fragment {
     //preference
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
+
     //database
     private static MyDatabaseHelper dbHelper;
     SQLiteDatabase db;
@@ -51,6 +52,7 @@ public class NowFragment extends Fragment {
     String title;
     long duration = 0;
 
+    //handler
     Handler mHandler = new Handler();
     Runnable task = new Runnable() {
         @Override
@@ -86,12 +88,13 @@ public class NowFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_now,null);
 
+        //获得控件
         titleText =view.findViewById(R.id.title);
         startStopImg = view.findViewById(R.id.start_stop);
         startTimeText = view.findViewById(R.id.start_time);
         durationText = view.findViewById(R.id.duration);
 
-        //更改标题时暂存到preference
+        //标题更改监听事件：更改标题时暂存到preference
         titleText.addTextChangedListener(new TextWatcher(){
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
@@ -103,22 +106,8 @@ public class NowFragment extends Fragment {
                 editor.commit();
             }
         });
-        //如果preference中还有上次的数据
-        mHandler.removeCallbacks(task);//停止定时更新ui
-        isDoingSomething = pref.getBoolean("isDoingSomething",false);
-        Log.d(TAG, "onCreateView: isdoingsomething = " + isDoingSomething);
-        Log.d(TAG, "onCreateView: title = "+ pref.getString("title", ""));
-        Log.d(TAG, "onCreateView: startTime = " + pref.getLong("startTime", 0));
-        title = pref.getString("title", "");
-        titleText.setText(title);
-        if(isDoingSomething) {
-            startTime = pref.getLong("startTime", 0);
-            startStopImg.setImageResource(R.drawable.stop);
-            startTimeText.setText(DateTimeUtil.timestamp2whole(startTime));
-            duration = System.currentTimeMillis() - startTime;
-            mHandler.post(task);//定时更新ui
-        }
 
+        //开始，结束按钮的监听事件
         startStopImg.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,5 +148,30 @@ public class NowFragment extends Fragment {
             }
         }));
         return view;
+    }
+
+    /**
+     * 在每次变为可见时，更新ui
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart");
+        //停止定时更新ui
+        mHandler.removeCallbacks(task);
+        //如果preference中还有上次的数据
+        isDoingSomething = pref.getBoolean("isDoingSomething",false);
+        Log.d(TAG, "onCreateView: isdoingsomething = " + isDoingSomething);
+        Log.d(TAG, "onCreateView: title = "+ pref.getString("title", ""));
+        Log.d(TAG, "onCreateView: startTime = " + pref.getLong("startTime", 0));
+        title = pref.getString("title", "");
+        titleText.setText(title);
+        if(isDoingSomething) {
+            startTime = pref.getLong("startTime", 0);
+            startStopImg.setImageResource(R.drawable.stop);
+            startTimeText.setText(DateTimeUtil.timestamp2whole(startTime));
+            duration = System.currentTimeMillis() - startTime;
+            mHandler.post(task);//定时更新ui
+        }
     }
 }
